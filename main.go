@@ -13,12 +13,14 @@ import (
 	"golang.org/x/term"
 )
 
-var romPath string
-var romsBaseFolder string
-var emuSystem string
-var host string
-var port string
-var user string
+var (
+	romPath        string
+	romsBaseFolder string
+	emuSystem      string
+	host           string
+	port           string
+	user           string
+)
 
 func init() {
 	flag.StringVar(&romPath, "rom", "", "path to the rom (if the path is a directory, the entire directory will be copied)")
