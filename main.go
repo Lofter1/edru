@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -23,6 +24,15 @@ var (
 )
 
 func init() {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Println(err)
+	}
+	err = loadConfig(path.Join(homeDir, ".edru.conf.json"))
+	if err != nil {
+		log.Println(err)
+	}
+
 	flag.StringVar(&romPath, "rom", "", "path to the rom (if the path is a directory, the entire directory will be copied)")
 	flag.StringVar(&romsBaseFolder, "rom-folder", "/home/deck/Emulation/roms/", "EmuDeck ROM folder on the SteamDeck")
 	flag.StringVar(&emuSystem, "system", "", "The Emulation system for the rom")
@@ -76,4 +86,20 @@ func readPassword() (string, error) {
 	password, err := term.ReadPassword(int(os.Stdin.Fd()))
 	fmt.Println()
 	return string(password), err
+}
+
+func loadConfig(location string) error {
+	dat, err := os.ReadFile(location)
+	if err != nil {
+		return err
+	}
+
+	var config map[string]any
+	if err := json.Unmarshal(dat, &config); err != nil {
+		return err
+	}
+
+	romsBaseFolder = config["romFolder"].(string)
+
+	return nil
 }
